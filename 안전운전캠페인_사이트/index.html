@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>2026 사내 바이브코딩 대회 — 한국도로공사</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --navy:   #003087;
+      --blue:   #0050b3;
+      --sky:    #1976d2;
+      --yellow: #f47920;
+      --light:  #f5f7fa;
+      --gray:   #78909c;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Noto Sans KR', sans-serif; background: var(--light); color: #1a1a2e; }
+
+    /* ── Top Bar ── */
+    .topbar {
+      background: var(--navy); color: #fff;
+      padding: 12px 32px;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .topbar-logo { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 16px; }
+    .topbar-logo span { font-size: 22px; }
+    .topbar-right { display: flex; align-items: center; gap: 16px; font-size: 13px; color: #b8c9e8; }
+    .badge {
+      background: var(--yellow); color: #fff;
+      padding: 3px 12px; border-radius: 20px;
+      font-size: 11px; font-weight: 700;
+    }
+
+    /* ── Hero ── */
+    .hero {
+      background: linear-gradient(135deg, #003087 0%, #0050b3 55%, #c85a00 100%);
+      color: #fff; padding: 80px 32px; text-align: center;
+    }
+    .hero-label {
+      display: inline-block;
+      border: 1.5px solid rgba(255,255,255,0.5);
+      padding: 6px 20px; border-radius: 30px;
+      font-size: 12px; font-weight: 500; letter-spacing: 2px;
+      margin-bottom: 24px; color: rgba(255,255,255,0.85);
+    }
+    .hero h1 { font-size: clamp(22px, 4vw, 42px); font-weight: 900; line-height: 1.45; margin-bottom: 16px; }
+    .hero h1 em { color: var(--yellow); font-style: normal; }
+    .hero-sub { font-size: 15px; color: rgba(255,255,255,0.75); margin-bottom: 40px; }
+    .btn-apply {
+      display: inline-block;
+      background: var(--yellow); color: #fff; border: none;
+      padding: 16px 48px; border-radius: 50px;
+      font-size: 16px; font-weight: 700; cursor: pointer;
+      font-family: 'Noto Sans KR', sans-serif;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .btn-apply:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(244,121,32,0.45); }
+
+    /* ── Road Divider ── */
+    .road-divider {
+      height: 12px;
+      background: repeating-linear-gradient(
+        90deg,
+        #f47920 0px, #f47920 40px,
+        #003087 40px, #003087 70px
+      );
+    }
+
+    /* ── Main ── */
+    .main { max-width: 1100px; margin: 0 auto; padding: 60px 24px; }
+    .section-label {
+      display: inline-block;
+      background: var(--navy); color: #fff;
+      padding: 6px 16px; border-radius: 4px;
+      font-size: 12px; font-weight: 700; letter-spacing: 1px;
+      margin-bottom: 32px;
+    }
+
+    /* ── Cards ── */
+    .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-bottom: 48px; }
+    @media (max-width: 768px) { .cards { grid-template-columns: 1fr; } }
+    .card {
+      background: #fff; border-radius: 12px; padding: 28px 24px;
+      border-top: 4px solid var(--blue);
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(0,0,0,0.1); }
+    .card-icon { font-size: 36px; margin-bottom: 12px; }
+    .card-point { font-size: 11px; font-weight: 700; color: var(--blue); letter-spacing: 1px; margin-bottom: 8px; }
+    .card h3 { font-size: 17px; font-weight: 700; color: var(--navy); margin-bottom: 10px; }
+    .card p { font-size: 13px; color: var(--gray); line-height: 1.7; }
+    .card p strong { color: var(--navy); }
+
+    /* ── Bottom Grid ── */
+    .bottom-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+    @media (max-width: 768px) { .bottom-grid { grid-template-columns: 1fr; } }
+
+    /* ── Schedule ── */
+    .schedule-box, .qr-box {
+      background: #fff; border-radius: 12px; padding: 28px 24px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    }
+    .schedule-box h3, .qr-box h3 { font-size: 16px; font-weight: 700; color: var(--navy); margin-bottom: 20px; }
+    .schedule-item { display: flex; gap: 12px; align-items: flex-start; margin-bottom: 16px; }
+    .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--blue); margin-top: 5px; flex-shrink: 0; }
+    .sched-label { font-size: 13px; font-weight: 700; color: var(--navy); margin-bottom: 2px; }
+    .sched-date  { font-size: 13px; color: var(--gray); }
+    .highlight-box {
+      background: #fff8f0; border-left: 4px solid var(--yellow);
+      border-radius: 4px; padding: 14px 16px; margin-top: 20px;
+      font-size: 13px; color: var(--navy);
+    }
+
+    /* ── QR ── */
+    .qr-box { display: flex; flex-direction: column; align-items: center; justify-content: center; }
+    .qr-box h3 { align-self: flex-start; }
+    .qr-placeholder {
+      width: 130px; height: 130px;
+      border: 2px dashed var(--gray); border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--gray); font-size: 12px; text-align: center; line-height: 1.6;
+    }
+    .qr-note { font-size: 12px; color: var(--gray); margin-top: 12px; text-align: center; }
+
+    /* ── Footer ── */
+    footer {
+      background: var(--navy); color: rgba(255,255,255,0.7);
+      padding: 28px 32px; text-align: center; font-size: 13px; line-height: 2;
+    }
+    footer strong { color: #fff; }
+    footer a { color: var(--yellow); text-decoration: none; }
+
+    /* ── 인증 모달 ── */
+    .modal-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.52); z-index: 1000;
+      align-items: center; justify-content: center;
+    }
+    .modal-overlay.active { display: flex; }
+    .modal {
+      background: #fff; border-radius: 16px; padding: 40px 36px;
+      width: 90%; max-width: 440px; position: relative;
+      animation: popIn 0.2s ease;
+    }
+    @keyframes popIn {
+      from { opacity: 0; transform: scale(0.94) translateY(8px); }
+      to   { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    .modal-close {
+      position: absolute; top: 16px; right: 20px;
+      background: none; border: none; font-size: 22px; cursor: pointer; color: var(--gray);
+    }
+    .modal-close:hover { color: #333; }
+    .modal h2 { font-size: 20px; font-weight: 700; color: var(--navy); margin-bottom: 8px; }
+    .modal-desc { font-size: 13px; color: var(--gray); margin-bottom: 28px; line-height: 1.7; }
+    .form-group { margin-bottom: 20px; }
+    .form-group label { display: block; font-size: 13px; font-weight: 700; color: var(--navy); margin-bottom: 8px; }
+    .form-group input,
+    .form-group select {
+      width: 100%; padding: 12px 16px;
+      border: 1.5px solid #dde4ee; border-radius: 8px;
+      font-size: 14px; font-family: 'Noto Sans KR', sans-serif;
+      outline: none; transition: border-color 0.2s; color: #1a1a2e;
+    }
+    .form-group input:focus,
+    .form-group select:focus { border-color: var(--blue); }
+    .btn-verify {
+      width: 100%; background: var(--navy); color: #fff; border: none;
+      padding: 14px; border-radius: 8px;
+      font-size: 15px; font-weight: 700; cursor: pointer;
+      font-family: 'Noto Sans KR', sans-serif;
+      transition: background 0.2s;
+    }
+    .btn-verify:hover { background: var(--blue); }
+    .verify-result {
+      display: none; margin-top: 16px; padding: 14px 16px;
+      border-radius: 8px; font-size: 14px; font-weight: 500; line-height: 1.6;
+    }
+    .verify-result.success { display: block; background: #e6f4ea; color: #1b5e20; }
+    .verify-result.error   { display: block; background: #fdecea; color: #b71c1c; }
+  </style>
+</head>
+<body>
+
+<!-- Top Bar -->
+<div class="topbar">
+  <div class="topbar-logo">
+    <span>🛣️</span> 한국도로공사
+  </div>
+  <div class="topbar-right">
+    <span id="todayDate"></span>
+    <span class="badge">VIBE CODING 2026</span>
+  </div>
+</div>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="hero-label">VIBE CODING COMPETITION 2026</div>
+  <h1>AI와 함께, 도로의 미래를<br><em>코딩</em>으로 설계하다</h1>
+  <p class="hero-sub">한국도로공사 디지털혁신처 주관 · 전 임직원 대상 · 코딩 경험 불필요</p>
+  <button class="btn-apply" onclick="openAuthModal()">참가 신청 인증하기 →</button>
+</section>
+
+<!-- Road Divider -->
+<div class="road-divider"></div>
+
+<!-- Main Content -->
+<div class="main">
+  <span class="section-label">대회 안내</span>
+
+  <div class="cards">
+    <div class="card">
+      <div class="card-icon">💡</div>
+      <div class="card-point">POINT 01</div>
+      <h3>누구나 참가 가능, AI가 파트너</h3>
+      <p>코딩 경험이 없어도 됩니다. <strong>AI 코딩 도구</strong>가 여러분의 아이디어를 코드로 구현해 드립니다.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">🛣️</div>
+      <div class="card-point">POINT 02</div>
+      <h3>주제 — 도로·교통 문제 해결</h3>
+      <p>우리가 매일 마주치는 <strong>도로·교통 문제</strong>를 창의적인 아이디어로 해결해보세요.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">🏆</div>
+      <div class="card-point">POINT 03</div>
+      <h3>총 상금 500만 원 시상</h3>
+      <p>대상 200만 원, 금상 100만 원 등 <strong>총 500만 원</strong>의 상금과 함께 디지털혁신처장 표창.</p>
+    </div>
+  </div>
+
+  <div class="bottom-grid">
+    <div class="schedule-box">
+      <h3>📅 대회 일정</h3>
+      <div class="schedule-item">
+        <div class="dot"></div>
+        <div>
+          <div class="sched-label">참가 신청</div>
+          <div class="sched-date">2026.05.19(화) ~ 06.06(금)</div>
+        </div>
+      </div>
+      <div class="schedule-item">
+        <div class="dot"></div>
+        <div>
+          <div class="sched-label">AI 툴 워크숍</div>
+          <div class="sched-date">2026.06.03(화) 온라인</div>
+        </div>
+      </div>
+      <div class="schedule-item">
+        <div class="dot"></div>
+        <div>
+          <div class="sched-label">개발 기간</div>
+          <div class="sched-date">2026.06.09(월) ~ 06.27(금)</div>
+        </div>
+      </div>
+      <div class="schedule-item">
+        <div class="dot"></div>
+        <div>
+          <div class="sched-label">발표 심사</div>
+          <div class="sched-date">2026.07.04(금) 본사 대강당</div>
+        </div>
+      </div>
+      <div class="highlight-box">
+        🎯 사전 AI 툴 활용 워크숍 — 6월 3일(화) 온라인 진행
+      </div>
+    </div>
+
+    <div class="qr-box">
+      <h3>📱 신청 QR 코드</h3>
+      <div class="qr-placeholder">▦ QR 코드<br>삽입 위치</div>
+      <p class="qr-note">신청 링크 확정 후 이미지로 교체</p>
+    </div>
+  </div>
+</div>
+
+<!-- Footer -->
+<footer>
+  <strong>한국도로공사</strong><br>
+  담당 부서: 디지털혁신처 &nbsp;·&nbsp; 문의: <a href="mailto:digitalhq@ex.co.kr">digitalhq@ex.co.kr</a><br>
+  © 2026 Korea Expressway Corporation. All rights reserved.
+</footer>
+
+<!-- 인증 모달 -->
+<div class="modal-overlay" id="authModal">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <button class="modal-close" onclick="closeAuthModal()" aria-label="닫기">✕</button>
+    <h2 id="modalTitle">🔐 참가 자격 인증</h2>
+    <p class="modal-desc">
+      한국도로공사 임직원 여부를 확인합니다.<br>
+      사번과 소속 부서를 입력해 주세요.
+    </p>
+    <div class="form-group">
+      <label for="empId">사번 (7자리 숫자)</label>
+      <input type="text" id="empId" placeholder="예: 1234567" maxlength="7" inputmode="numeric">
+    </div>
+    <div class="form-group">
+      <label for="dept">소속 부서</label>
+      <select id="dept">
+        <option value="">선택하세요</option>
+        <option>디지털혁신처</option>
+        <option>도로관리처</option>
+        <option>교통관제처</option>
+        <option>건설사업처</option>
+        <option>안전환경처</option>
+        <option>경영기획처</option>
+        <option>기타</option>
+      </select>
+    </div>
+    <button class="btn-verify" onclick="verify()">인증하기</button>
+    <div class="verify-result" id="verifyResult" role="alert"></div>
+  </div>
+</div>
+
+<script>
+  // 오늘 날짜 동적 렌더링
+  (function() {
+    const DAY_KR = ['일','월','화','수','목','금','토'];
+    const d = new Date();
+    document.getElementById('todayDate').textContent =
+      d.getFullYear() + '년 ' + (d.getMonth() + 1) + '월 ' + d.getDate() + '일 (' + DAY_KR[d.getDay()] + ')';
+  })();
+
+  // 모달 열기 / 닫기
+  function openAuthModal() {
+    document.getElementById('authModal').classList.add('active');
+    document.getElementById('empId').focus();
+  }
+  function closeAuthModal() {
+    document.getElementById('authModal').classList.remove('active');
+    document.getElementById('empId').value = '';
+    document.getElementById('dept').value = '';
+    const r = document.getElementById('verifyResult');
+    r.className = 'verify-result';
+    r.textContent = '';
+  }
+
+  // ESC 키 / 오버레이 클릭으로 닫기
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closeAuthModal();
+  });
+  document.getElementById('authModal').addEventListener('click', function(e) {
+    if (e.target === this) closeAuthModal();
+  });
+
+  // Enter 키로 인증하기
+  document.getElementById('empId').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') verify();
+  });
+
+  // 인증 로직 (사번 형식 + 부서 선택 검증)
+  function verify() {
+    const empId = document.getElementById('empId').value.trim();
+    const dept  = document.getElementById('dept').value;
+    const result = document.getElementById('verifyResult');
+
+    if (!/^\d{7}$/.test(empId)) {
+      result.className = 'verify-result error';
+      result.textContent = '⚠️ 사번은 숫자 7자리로 입력해 주세요.';
+      return;
+    }
+    if (!dept) {
+      result.className = 'verify-result error';
+      result.textContent = '⚠️ 소속 부서를 선택해 주세요.';
+      return;
+    }
+
+    result.className = 'verify-result success';
+    result.textContent =
+      '✅ 인증 완료! ' + dept + ' ' + empId + '번 임직원으로 확인되었습니다. 참가 신청이 가능합니다.';
+  }
+</script>
+</body>
+</html>

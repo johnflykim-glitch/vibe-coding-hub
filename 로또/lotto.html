@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>로또 번호 생성기</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Segoe UI', sans-serif;
+      color: #fff;
+      padding: 20px;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      font-weight: 800;
+      margin-bottom: 8px;
+      background: linear-gradient(90deg, #f7c948, #ff6b35);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-align: center;
+    }
+
+    .subtitle {
+      font-size: 0.95rem;
+      color: #aaa;
+      margin-bottom: 40px;
+      text-align: center;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 24px;
+      padding: 40px;
+      width: 100%;
+      max-width: 560px;
+      backdrop-filter: blur(10px);
+    }
+
+    .count-selector {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+
+    .count-selector label {
+      font-size: 0.9rem;
+      color: #ccc;
+    }
+
+    .count-selector select {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 10px;
+      color: #fff;
+      font-size: 1rem;
+      padding: 8px 16px;
+      cursor: pointer;
+      outline: none;
+    }
+
+    .count-selector select option {
+      background: #1a1a2e;
+    }
+
+    .generate-btn {
+      display: block;
+      width: 100%;
+      padding: 16px;
+      font-size: 1.15rem;
+      font-weight: 700;
+      border: none;
+      border-radius: 14px;
+      cursor: pointer;
+      background: linear-gradient(90deg, #f7c948, #ff6b35);
+      color: #1a1a2e;
+      transition: transform 0.15s, box-shadow 0.15s;
+      letter-spacing: 0.5px;
+    }
+
+    .generate-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(247, 201, 72, 0.35);
+    }
+
+    .generate-btn:active {
+      transform: translateY(0);
+    }
+
+    .results {
+      margin-top: 32px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      animation: fadeIn 0.4s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .row-label {
+      font-size: 0.8rem;
+      color: #aaa;
+      width: 32px;
+      flex-shrink: 0;
+      text-align: center;
+    }
+
+    .balls {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .ball {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.95rem;
+      font-weight: 800;
+      color: #fff;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      transition: transform 0.2s;
+    }
+
+    .ball:hover {
+      transform: scale(1.12);
+    }
+
+    /* 로또 공 색상 (번호 구간별) */
+    .ball.range1 { background: linear-gradient(135deg, #f7c948, #e6a817); } /* 1-10 */
+    .ball.range2 { background: linear-gradient(135deg, #6dcff6, #2196f3); } /* 11-20 */
+    .ball.range3 { background: linear-gradient(135deg, #ff7675, #d63031); } /* 21-30 */
+    .ball.range4 { background: linear-gradient(135deg, #a29bfe, #6c5ce7); } /* 31-40 */
+    .ball.range5 { background: linear-gradient(135deg, #55efc4, #00b894); } /* 41-45 */
+
+    .copy-btn {
+      margin-left: auto;
+      background: none;
+      border: 1px solid rgba(255,255,255,0.2);
+      color: #aaa;
+      border-radius: 8px;
+      padding: 4px 10px;
+      font-size: 0.75rem;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: border-color 0.2s, color 0.2s;
+    }
+
+    .copy-btn:hover {
+      border-color: #f7c948;
+      color: #f7c948;
+    }
+
+    .footer {
+      margin-top: 32px;
+      font-size: 0.75rem;
+      color: #555;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>로또 번호 생성기</h1>
+  <p class="subtitle">1~45 중 6개를 무작위로 추첨합니다</p>
+
+  <div class="card">
+    <div class="count-selector">
+      <label for="countSelect">생성 개수</label>
+      <select id="countSelect">
+        <option value="1">1게임</option>
+        <option value="2">2게임</option>
+        <option value="3">3게임</option>
+        <option value="5" selected>5게임</option>
+        <option value="10">10게임</option>
+      </select>
+    </div>
+
+    <button class="generate-btn" onclick="generate()">번호 생성하기</button>
+
+    <div class="results" id="results"></div>
+  </div>
+
+  <p class="footer">* 이 번호는 순수 무작위 생성이며 당첨을 보장하지 않습니다.</p>
+
+  <script>
+    function getRange(n) {
+      if (n <= 10) return 'range1';
+      if (n <= 20) return 'range2';
+      if (n <= 30) return 'range3';
+      if (n <= 40) return 'range4';
+      return 'range5';
+    }
+
+    function pickNumbers() {
+      const pool = Array.from({ length: 45 }, (_, i) => i + 1);
+      for (let i = pool.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [pool[i], pool[j]] = [pool[j], pool[i]];
+      }
+      return pool.slice(0, 6).sort((a, b) => a - b);
+    }
+
+    function generate() {
+      const count = parseInt(document.getElementById('countSelect').value);
+      const container = document.getElementById('results');
+      container.innerHTML = '';
+
+      for (let g = 1; g <= count; g++) {
+        const nums = pickNumbers();
+        const row = document.createElement('div');
+        row.className = 'row';
+
+        const label = document.createElement('span');
+        label.className = 'row-label';
+        label.textContent = g + '게';
+        row.appendChild(label);
+
+        const balls = document.createElement('div');
+        balls.className = 'balls';
+        nums.forEach(n => {
+          const ball = document.createElement('div');
+          ball.className = 'ball ' + getRange(n);
+          ball.textContent = n;
+          balls.appendChild(ball);
+        });
+        row.appendChild(balls);
+
+        const copyBtn = document.createElement('button');
+        copyBtn.className = 'copy-btn';
+        copyBtn.textContent = '복사';
+        copyBtn.onclick = () => {
+          navigator.clipboard.writeText(nums.join(', ')).then(() => {
+            copyBtn.textContent = '완료!';
+            setTimeout(() => copyBtn.textContent = '복사', 1500);
+          });
+        };
+        row.appendChild(copyBtn);
+
+        container.appendChild(row);
+      }
+    }
+
+    generate();
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>글로벌 경제 뉴스 TOP 10 — 2026년 5월</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;700;900&display=swap');
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      background: #0b0f1c;
+      color: #dde3f0;
+      padding: 48px 20px 72px;
+    }
+
+    /* ══ HEADER ══ */
+    header { text-align: center; margin-bottom: 48px; }
+    .badge {
+      display: inline-block;
+      background: linear-gradient(135deg, #1565c0, #0d47a1);
+      color: #90caf9;
+      font-size: 11px; font-weight: 700;
+      letter-spacing: 3px; text-transform: uppercase;
+      padding: 6px 20px; border-radius: 30px; margin-bottom: 18px;
+    }
+    header h1 {
+      font-size: clamp(26px, 5vw, 44px); font-weight: 900;
+      background: linear-gradient(90deg, #64b5f6 0%, #e3f2fd 50%, #fff 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text; line-height: 1.2; margin-bottom: 14px;
+    }
+    header p { font-size: 13px; color: #607d8b; letter-spacing: 0.4px; }
+    .divider {
+      width: 64px; height: 4px;
+      background: linear-gradient(90deg, #1565c0, #42a5f5);
+      border-radius: 4px; margin: 22px auto 0;
+    }
+
+    /* ══ CLOCK ══ */
+    .clock-bar {
+      max-width: 860px;
+      margin: 0 auto 32px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+    .clock-icon { font-size: 15px; opacity: 0.5; }
+    #clock {
+      font-size: 15px; font-weight: 700;
+      color: #42a5f5;
+      letter-spacing: 1px;
+      background: rgba(66,165,245,0.08);
+      border: 1px solid rgba(66,165,245,0.25);
+      padding: 5px 16px; border-radius: 20px;
+    }
+
+    /* ══ LIST ══ */
+    .list {
+      max-width: 860px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* ══ CARD LINK WRAPPER ══ */
+    .card-link {
+      text-decoration: none;
+      color: inherit;
+      display: block;
+      border-radius: 14px;
+    }
+
+    /* ══ CARD ══ */
+    .card {
+      display: flex;
+      border-radius: 14px;
+      overflow: hidden;
+      border: 2px solid var(--accent);
+      background: #111827;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.45);
+      transition: transform 0.22s, box-shadow 0.22s, border-color 0.22s;
+      cursor: pointer;
+    }
+    .card-link:hover .card {
+      transform: translateY(-3px);
+      border-color: #f44336;
+      box-shadow: 0 10px 36px rgba(244,67,54,0.35), 0 0 0 1px #f44336;
+    }
+    .card-link:hover .num-block {
+      background: rgba(244,67,54,0.18);
+    }
+    .card-link:hover .num-text {
+      color: #f44336;
+    }
+    .card-link:hover .source {
+      color: #f44336;
+      border-color: #f44336;
+    }
+    .card-link:hover .title {
+      color: #ff8a80;
+    }
+
+    /* ══ NUMBER BLOCK ══ */
+    .num-block {
+      flex-shrink: 0;
+      width: 100px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--accent-bg);
+      position: relative;
+      transition: background 0.22s;
+    }
+    .num-block::after {
+      content: '';
+      position: absolute;
+      right: 0; top: 0; bottom: 0;
+      width: 1px;
+      background: var(--accent);
+      opacity: 0.4;
+    }
+    .num-text {
+      font-size: 64px; font-weight: 900;
+      color: var(--accent);
+      line-height: 1; letter-spacing: -4px;
+      transition: color 0.22s;
+    }
+
+    /* ══ CONTENT ══ */
+    .content { flex: 1; padding: 22px 26px 20px; }
+    .meta { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; }
+    .source {
+      font-size: 10px; font-weight: 700;
+      letter-spacing: 1.5px; text-transform: uppercase;
+      padding: 3px 11px; border-radius: 20px;
+      background: rgba(255,255,255,0.06);
+      color: var(--accent);
+      border: 1px solid var(--accent);
+      transition: color 0.22s, border-color 0.22s;
+    }
+    .date { font-size: 11px; color: #4a5568; }
+    .url-hint {
+      font-size: 10px; color: #37474f;
+      margin-left: auto;
+      display: flex; align-items: center; gap: 4px;
+    }
+    .url-hint::before { content: '↗'; font-size: 11px; }
+    .card-link:hover .url-hint { color: #f44336; }
+
+    .title {
+      font-size: 17px; font-weight: 700;
+      line-height: 1.5; color: #eceff1;
+      margin-bottom: 8px;
+      transition: color 0.22s;
+    }
+    .body { font-size: 13.5px; line-height: 1.8; color: #78909c; }
+    .tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 14px; }
+    .tag {
+      font-size: 11px; padding: 3px 10px;
+      border-radius: 20px; background: #1a2535;
+      color: #546e7a; border: 1px solid #263550;
+    }
+
+    /* ══ COLOR THEMES ══ */
+    .c1  { --accent:#ff5252; --accent-bg:rgba(255,82,82,.1); }
+    .c2  { --accent:#ff9800; --accent-bg:rgba(255,152,0,.1); }
+    .c3  { --accent:#ffc107; --accent-bg:rgba(255,193,7,.1); }
+    .c4  { --accent:#42a5f5; --accent-bg:rgba(66,165,245,.1); }
+    .c5  { --accent:#26c6da; --accent-bg:rgba(38,198,218,.1); }
+    .c6  { --accent:#ab47bc; --accent-bg:rgba(171,71,188,.1); }
+    .c7  { --accent:#26a69a; --accent-bg:rgba(38,166,154,.1); }
+    .c8  { --accent:#66bb6a; --accent-bg:rgba(102,187,106,.1); }
+    .c9  { --accent:#ec407a; --accent-bg:rgba(236,64,122,.1); }
+    .c10 { --accent:#7e57c2; --accent-bg:rgba(126,87,194,.1); }
+
+    /* ══ RESPONSIVE ══ */
+    @media (max-width: 560px) {
+      .num-block { width: 68px; }
+      .num-text  { font-size: 42px; letter-spacing: -2px; }
+      .content   { padding: 16px 16px 14px; }
+      .title     { font-size: 15px; }
+      .body      { font-size: 13px; }
+      .url-hint  { display: none; }
+    }
+
+    /* ══ FOOTER ══ */
+    footer {
+      text-align: center; margin-top: 56px;
+      font-size: 12px; color: #37474f; line-height: 2;
+    }
+    footer a { color: #546e7a; text-decoration: none; }
+    footer a:hover { color: #90caf9; }
+  </style>
+</head>
+<body>
+
+<!-- ── HEADER ── -->
+<header>
+  <div class="badge">GLOBAL ECONOMY NEWS</div>
+  <h1>글로벌 경제 뉴스 TOP 10</h1>
+  <p>2026년 5월 최신 해외 주요 매체 기사 번역 요약 &nbsp;|&nbsp; Bloomberg · CNBC</p>
+  <div class="divider"></div>
+</header>
+
+<!-- ── CLOCK ── -->
+<div class="clock-bar">
+  <span class="clock-icon">🕐</span>
+  <span id="clock">--:--:--</span>
+</div>
+
+<!-- ── ARTICLE LIST ── -->
+<div class="list">
+
+  <!-- 01 -->
+  <a class="card-link" href="https://www.cnbc.com/2026/05/04/strait-hormuz-gas-price-oil-shock-recession-risk-economy-iran-us-war.html" target="_blank" rel="noopener">
+    <div class="card c1">
+      <div class="num-block"><span class="num-text">01</span></div>
+      <div class="content">
+        <div class="meta">
+          <span class="source">CNBC</span>
+          <span class="date">2026.05.04</span>
+          <span class="url-hint">원문 보기</span>
+        </div>
+        <div class="title">"근거 없는 낙관" — 시장, 이란 전쟁 오일쇼크 속 경기침체로 몽유 중</div>
+        <div class="body">미국-이란 전쟁(2월 28일 발발) 이후 유가가 50% 이상 폭등했음에도 S&amp;P 500은 5월 1일 사상 최고치(7,230)를 경신했다. 전문가들은 투자자들이 에너지 충격의 파급력을 극도로 과소평가하고 있으며, "극도로 잘못 배치된 낙관론"이 세계 경제를 조용히 경기침체로 몰아가고 있다고 경고했다.</div>
+        <div class="tags"><span class="tag">#이란전쟁</span><span class="tag">#유가급등</span><span class="tag">#경기침체위험</span><span class="tag">#오일쇼크</span></div>
+      </div>
+    </div>
+  </a>
+
+  <!-- 02 -->
+  <a class="card-link" href="https://www.cnbc.com/video/2026/05/08/dallara-the-war-continues-to-be-a-serious-cloud-over-the-global-economy.html" target="_blank" rel="noopener">
+    <div class="card c2">
+      <div class="num-block"><span class="num-text">02</span></div>
+      <div class="content">
+        <div class="meta">
+          <span class="source">CNBC</span>
+          <span class="date">2026.05.08</span>
+          <span class="url-hint">원문 보기</span>
+        </div>
+        <div class="title">이란 전쟁, 세계 경제 위에 드리운 "심각한 먹구름"</div>
+        <div class="body">IIF(국제금융협회) 다라라 회장은 CNBC 인터뷰에서 "이란 전쟁은 세계 경제의 가장 심각한 하방 위험"이라고 밝혔다. 호르무즈 해협 봉쇄 가능성이 에너지 공급망 전반을 위협하며, 공급망 병목이 재연될 경우 인플레이션 재가속은 불가피하다고 진단했다.</div>
+        <div class="tags"><span class="tag">#IIF</span><span class="tag">#호르무즈해협</span><span class="tag">#에너지공급망</span></div>
+      </div>
+    </div>
+  </a>
+
+  <!-- 03 -->
+  <a class="card-link" href="https://www.cnbc.com/2026/05/05/oil-price-shock-iran-interest-rates-recession-borrowing-war-central-banks-bank-england-ecb.html" target="_blank" rel="noopener">
+    <div class="card c3">
+      <div class="num-block"><span class="num-text">03</span></div>
+      <div class="content">
+        <div class="meta">
+          <span class="source">CNBC</span>
+          <span class="date">2026.05.05</span>
+          <span class="url-hint">원문 보기</span>
+        </div>
+        <div class="title">중앙은행들, 금리 인상으로 경기침체 자초할 위험</div>
+        <div class="body">오일쇼크의 공급발(供給發) 특성으로 인해 중앙은행이 인플레이션을 잡으려면 "극도로 높은", "경기침체를 유발할" 수준의 금리 인상이 필요하다고 전략가들이 경고했다. 영란은행·ECB 모두 딜레마에 빠졌으며, 금리 인상이 오히려 성장 둔화를 심화시킬 수 있다는 우려가 커지고 있다.</div>
+        <div class="tags"><span class="tag">#중앙은행</span><span class="tag">#금리딜레마</span><span class="tag">#ECB</span><span class="tag">#영란은행</span></div>
+      </div>
+    </div>
+  </a>
+
+  <!-- 04 -->
+  <a class="card-link" href="https://www.cnbc.com/video/2026/05/04/moodyas-analytics-oil-at-125barrel-for-sustained-period-will-push-the-world-into-a-recession.html" target="_blank" rel="noopener">
+    <div class="card c4">
+      <div class="num-block"><span class="num-text">04</span></div>
+      <div class="content">
+        <div class="meta">
+          <span class="source">CNBC</span>
+          <span class="date">2026.05.04</span>
+          <span class="url-hint">원문 보기</span>
+        </div>
+        <div class="title">무디스 경고: 유가 배럴당 $125 지속 시 세계 경기침체 진입</div>
+        <div class="body">무디스 애널리틱스는 브렌트유가 배럴당 125달러 이상을 "지속"할 경우 세계 경제가 경기침체로 진입할 것이라고 경고했다. 현재 유가는 미-이란 충돌 이후 급등세를 이어가고 있으며, IEA는 4월에 이미 전략 비축유 추가 방출을 검토 중이라고 밝혔다.</div>
+        <div class="tags"><span class="tag">#무디스</span><span class="tag">#브렌트유</span><span class="tag">#IEA</span></div>
+      </div>
+    </div>
+  </a>
+
+  <!-- 05 -->
+  <a class="card-link" href="https://www.bloomberg.com/news/articles/2026-05-09/world-economy-latest-us-job-growth-exceeds-projections-for-a-second-month" target="_blank" rel="noopener">
+    <div class="card c5">
+      <div class="num-block"><span class="num-text">05</span></div>
+      <div class="content">
+        <div class="meta">
+          <span class="source">Bloomberg</span>
+          <span class="date">2026.05.09</span>
+          <span class="url-hint">원문 보기</span>
+        </div>
+        <div class="title">美 고용시장 2개월 연속 예상치 초과 — 4월 신규 일자리 30만 건</div>
+        <div class="body">4월 미국 비농업 고용이 30만 건 증가하며 시장 예상을 두 달 연속 상회했다. 이는 전년도 제로(0)에 가까웠던 고용 증가세에서의 뚜렷한 반전이다. 다만 일부 이코노미스트는 오일쇼크와 관세 불확실성이 하반기 고용 시장에 부정적 영향을 줄 수 있다고 유보적 입장을 취했다.</div>
+        <div class="tags"><span class="tag">#美고용</span><span class="tag">#비농업취업자</span><span class="tag">#노동시장</span></div>
+      </div>
+    </div>
+  </a>
+
+  <!-- 06 -->
+  <a class="card-link" href="https://www.cnbc.com/2026/05/08/iran-focus-at-trump-xi-summit-may-delay-progress-on-tariffs-rare-earths.html" target="_blank" rel="noopener">
+    <div class="card c6">
+      <div class="num-block"><span class="num-text">06</span></div>
+      <div class="content">
+        <div class="meta">
+          <span class="source">CNBC</span>
+          <span class="date">2026.05.08</span>
+          <span class="url-hint">원문 보기</span>
+        </div>
+        <div class="title">트럼프-시진핑 정상회담, 이란 의제에 묻혀 관세·희토류 협의 지연</div>
+        <div class="body">5월 14~15일 예정된 트럼프-시진핑 회담에서 이란의 대미 제재 위반이 핵심 의제로 부상하며, 미중 간 관세 완화·희토류 수출 재개 논의가 뒷전으로 밀릴 가능성이 높다. 전문가들은 회담 성과가 제한될 수 있으며 양국 무역 긴장이 당분간 지속될 것으로 전망했다.</div>
+        <div class="tags"><span class="tag">#미중정상회담</span><span class="tag">#관세</span><span class="tag">#희토류</span><span class="tag">#이란제재</span></div>
+      </div>
+    </div>
+  </a>
+
+  <!-- 07 -->
+  <a class="card-link" href="https://www.bloomberg.com/news/articles/2026-04-18/world-economy-latest-imf-trims-global-growth-projections-on-oil-shock" target="_blank" rel="noopener">
+    <div class="card c7">
+      <div class="num-block"><span class="num-text">07</span></div>
+      <div class="content">
+        <div class="meta">
+          <span class="source">Bloomberg</span>
+          <span class="date">2026.04.18</span>
+          <span class="url-hint">원문 보기</span>
+        </div>
+        <div class="title">IMF, 오일쇼크 여파로 2026년 세계 성장 전망 하향 조정</div>
+        <div class="body">국제통화기금(IMF)은 중동 전쟁발 에너지 가격 급등이 전 세계 경제에 파급되고 있다며 2026년 글로벌 성장률 전망을 하향 조정했다. 특히 에너지 수입 의존도가 높은 유럽·아시아 신흥국의 타격이 크며, 무역량 위축과 기업 투자 감소가 동반될 것으로 분석됐다.</div>
+        <div class="tags"><span class="tag">#IMF</span><span class="tag">#성장전망</span><span class="tag">#에너지충격</span></div>
+      </div>
+    </div>
+  </a>
+
+  <!-- 08 -->
+  <a class="card-link" href="https://www.cnbc.com/video/2026/05/01/global-economy-is-at-a-crossroads-with-recent-energy-shocks-says-jpmorgans-bruce-kasman.html" target="_blank" rel="noopener">
+    <div class="card c8">
+      <div class="num-block"><span class="num-text">08</span></div>
+      <div class="content">
+        <div class="meta">
+          <span class="source">CNBC</span>
+          <span class="date">2026.05.01</span>
+          <span class="url-hint">원문 보기</span>
+        </div>
+        <div class="title">JPMorgan "세계 경제, 최근 에너지 충격으로 갈림길에 서 있다"</div>
+        <div class="body">JPMorgan의 수석 이코노미스트 브루스 카스만은 "이란 전쟁발 에너지 쇼크는 경제 사이클을 조기에 꺾을 위험이 있다"고 말했다. 그는 하반기에 세계 경제가 연착륙할지, 경기침체에 빠질지는 향후 2~3개월간 유가 경로에 달려 있다고 강조했다.</div>
+        <div class="tags"><span class="tag">#JPMorgan</span><span class="tag">#에너지쇼크</span><span class="tag">#연착륙</span></div>
+      </div>
+    </div>
+  </a>
+
+  <!-- 09 -->
+  <a class="card-link" href="https://www.bloomberg.com/news/videos/2026-05-07/the-k-shaped-economy-is-here-to-stay-says-homkes-video" target="_blank" rel="noopener">
+    <div class="card c9">
+      <div class="num-block"><span class="num-text">09</span></div>
+      <div class="content">
+        <div class="meta">
+          <span class="source">Bloomberg</span>
+          <span class="date">2026.05.07</span>
+          <span class="url-hint">원문 보기</span>
+        </div>
+        <div class="title">K자형 경제 고착화 — 계층 간 경기 체감 격차 심화</div>
+        <div class="body">고소득층은 자산 가격 상승·AI 수혜를 누리는 반면, 저소득층은 에너지·식품 인플레이션에 직격탄을 맞으며 'K자형' 경제 구조가 심화되고 있다. 블룸버그 전략가 홈키스는 "이 구조는 이제 일시적이 아닌 고착화 국면"이라며 소비 양극화가 거시 지표에 노이즈를 유발한다고 분석했다.</div>
+        <div class="tags"><span class="tag">#K자형경제</span><span class="tag">#불평등</span><span class="tag">#소비양극화</span></div>
+      </div>
+    </div>
+  </a>
+
+  <!-- 10 -->
+  <a class="card-link" href="https://www.bloomberg.com/graphics/2026-investment-outlooks/" target="_blank" rel="noopener">
+    <div class="card c10">
+      <div class="num-block"><span class="num-text">10</span></div>
+      <div class="content">
+        <div class="meta">
+          <span class="source">Bloomberg</span>
+          <span class="date">2026 전망</span>
+          <span class="url-hint">원문 보기</span>
+        </div>
+        <div class="title">2026 투자 전망: AI 붐·달러 약세·고착된 인플레이션의 삼각 구도</div>
+        <div class="body">블룸버그의 2026년 연간 투자 전망은 세 가지 핵심 테마를 제시했다. ① <strong style="color:#b39ddb">AI 붐</strong> 지속 — 빅테크·반도체 중심 실적 호조로 증시 상승 동력 유지. ② <strong style="color:#b39ddb">달러 약세</strong> — 재정 적자 확대·Fed 금리 동결 기조가 달러 인덱스를 압박. ③ <strong style="color:#b39ddb">고착된 인플레이션</strong> — 에너지 충격과 관세 인상이 물가의 완전한 하락을 막아 정책 불확실성 지속.</div>
+        <div class="tags"><span class="tag">#AI투자</span><span class="tag">#달러약세</span><span class="tag">#인플레이션</span><span class="tag">#Fed</span><span class="tag">#투자전망</span></div>
+      </div>
+    </div>
+  </a>
+
+</div>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <p>출처: <a href="https://www.bloomberg.com" target="_blank">Bloomberg</a> &nbsp;·&nbsp; <a href="https://www.cnbc.com/world-economy/" target="_blank">CNBC World Economy</a></p>
+  <p>수집 기준일: 2026년 5월 11일 &nbsp;|&nbsp; 해외 원문 기사를 AI가 번역·요약한 내용입니다.</p>
+</footer>
+
+<script>
+  function updateClock() {
+    const now = new Date();
+    const pad = n => String(n).padStart(2, '0');
+    const ymd = `${now.getFullYear()}.${pad(now.getMonth()+1)}.${pad(now.getDate())}`;
+    const hms = `${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
+    document.getElementById('clock').textContent = `${ymd}  ${hms}`;
+  }
+  updateClock();
+  setInterval(updateClock, 1000);
+</script>
+
+</body>
+</html>

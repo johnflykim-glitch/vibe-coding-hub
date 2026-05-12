@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(Start-Process \"C:\\\\Users\\\\L2404161\\\\Desktop\\\\도로공사_바이브코딩\\\\lotto.html\")",
+      "PowerShell(pip install *)",
+      "PowerShell(python \"C:\\\\Users\\\\L2404161\\\\Desktop\\\\도로공사_바이브코딩\\\\create_excel.py\")",
+      "PowerShell(Start-Process \"C:\\\\Users\\\\L2404161\\\\Desktop\\\\도로공사_바이브코딩\\\\test\\\\직원현황.xlsx\"; Start-Process \"C:\\\\Users\\\\L2404161\\\\Desktop\\\\도로공사_바이브코딩\\\\test\\\\매출실적.xlsx\"; Start-Process \"C:\\\\Users\\\\L2404161\\\\Desktop\\\\도로공사_바이브코딩\\\\test\\\\프로젝트관리.xlsx\")",
+      "PowerShell(python \"C:\\\\Users\\\\L2404161\\\\Desktop\\\\도로공사_바이브코딩\\\\merge_to_pdf.py\")",
+      "PowerShell(python \"C:\\\\Users\\\\L2404161\\\\Desktop\\\\도로공사_바이브코딩\\\\read_excel.py\")",
+      "PowerShell(python \"C:\\\\Users\\\\L2404161\\\\Desktop\\\\도로공사_바이브코딩\\\\read_excel.py\" 2>&1)",
+      "Bash(python -)",
+      "Bash(python3 *)",
+      "PowerShell(Start-Process \"C:\\\\Users\\\\L2404161\\\\Desktop\\\\도로공사_바이브코딩\\\\dashboard.html\")",
+      "WebSearch"
+    ]
+  }
+}
