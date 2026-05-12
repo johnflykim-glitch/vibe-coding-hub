@@ -6,7 +6,7 @@ export default async function handler(req, res) {
   }
 
   const apiKey = process.env.GEMINI_API_KEY;
-  const model  = process.env.GEMINI_MODEL || 'gemini-2.0-flash';
+  const model  = process.env.GEMINI_MODEL || 'gemini-2.5-flash-lite-preview-06-17';
 
   if (!apiKey) {
     return res.status(500).json({ error: 'GEMINI_API_KEY가 설정되지 않았습니다.' });
