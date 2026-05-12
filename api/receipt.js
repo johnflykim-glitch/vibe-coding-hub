@@ -7,7 +7,7 @@ export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'POST만 허용됩니다.' });
 
   const apiKey = process.env.GEMINI_API_KEY;
-  const model  = process.env.GEMINI_MODEL || 'gemini-2.5-flash-lite-preview-06-17';
+  const model  = process.env.GEMINI_MODEL || 'gemini-3.1-flash-lite';
   if (!apiKey) return res.status(500).json({ error: 'GEMINI_API_KEY가 설정되지 않았습니다.' });
 
   const { image, mimeType } = req.body;
@@ -52,7 +52,8 @@ export default async function handler(req, res) {
 
     if (!response.ok) {
       const err = await response.json();
-      return res.status(response.status).json({ error: err });
+      const msg = err?.error?.message || JSON.stringify(err);
+      return res.status(response.status).json({ error: msg });
     }
 
     const data = await response.json();
