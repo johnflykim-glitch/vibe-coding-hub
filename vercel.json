@@ -1,10 +1,11 @@
 {
   "version": 2,
   "functions": {
-    "api/gemini.js": { "maxDuration": 30 }
+    "api/gemini.js":  { "maxDuration": 30 },
+    "api/receipt.js": { "maxDuration": 30 }
   },
-  "routes": [
-    { "src": "/api/(.*)", "dest": "/api/$1" },
-    { "src": "/(.*)",     "dest": "/$1" }
+  "rewrites": [
+    { "source": "/api/:path*", "destination": "/api/:path*" },
+    { "source": "/:path*",     "destination": "/:path*" }
   ]
 }
