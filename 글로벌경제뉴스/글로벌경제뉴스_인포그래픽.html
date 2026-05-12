@@ -195,9 +195,42 @@
     }
     footer a { color: #546e7a; text-decoration: none; }
     footer a:hover { color: #90caf9; }
+
+    /* ══ 로딩 스크린 ══ */
+    #loading-screen {
+      position: fixed; inset: 0; z-index: 99999;
+      background: #0b0f1c;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 24px;
+      transition: opacity .5s ease, visibility .5s ease;
+    }
+    #loading-screen.hide { opacity: 0; visibility: hidden; }
+    .ld-logo { font-size: 48px; animation: ldBounce 1s ease-in-out infinite alternate; }
+    @keyframes ldBounce { from { transform: translateY(0); } to { transform: translateY(-12px); } }
+    .ld-title { color: #fff; font-size: 20px; font-weight: 900; letter-spacing: .04em; }
+    .ld-sub   { color: rgba(255,255,255,.45); font-size: 13px; }
+    .ld-road  {
+      width: 260px; height: 8px; background: rgba(255,255,255,.1);
+      border-radius: 4px; overflow: hidden;
+    }
+    .ld-road-bar {
+      height: 100%; width: 0%;
+      background: linear-gradient(90deg, #7c4dff, #90caf9);
+      border-radius: 4px;
+      animation: ldLoad 1.6s cubic-bezier(.4,0,.2,1) forwards;
+    }
+    @keyframes ldLoad { 0%{width:0%} 60%{width:80%} 100%{width:100%} }
   </style>
 </head>
 <body>
+
+<!-- ── 로딩 스크린 ── -->
+<div id="loading-screen">
+  <div class="ld-logo">📊</div>
+  <div class="ld-title">글로벌 경제 뉴스</div>
+  <div class="ld-sub">데이터를 불러오는 중입니다…</div>
+  <div class="ld-road"><div class="ld-road-bar"></div></div>
+</div>
 
 <!-- ── HEADER ── -->
 <header>
@@ -395,6 +428,12 @@
 </footer>
 
 <script>
+  window.addEventListener('load', () => {
+    setTimeout(() => {
+      document.getElementById('loading-screen').classList.add('hide');
+    }, 1700);
+  });
+
   function updateClock() {
     const now = new Date();
     const pad = n => String(n).padStart(2, '0');
