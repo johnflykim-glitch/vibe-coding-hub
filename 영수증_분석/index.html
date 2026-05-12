@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>영수증 자동 분석기 — AI 항목 추출</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;900&display=swap');
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --blue:    #1155aa;
+      --blue-d:  #0a3d80;
+      --blue-l:  #1976d2;
+      --blue-bg: #ddeeff;
+      --yellow:  #f5c400;
+      --yellow-d:#c89a00;
+      --green:   #006633;
+      --green-bg:#e6f4ec;
+      --red:     #c62828;
+      --red-bg:  #ffebee;
+      --bg:      #e8f0f8;
+      --surface: #ffffff;
+      --border:  #c8d8ea;
+      --text:    #1a2535;
+      --text-sub:#4a6080;
+      --text-mute:#8aa0bb;
+    }
+
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding-bottom: 60px;
+    }
+
+    /* ── 로딩 스크린 ── */
+    #loading-screen {
+      position: fixed; inset: 0; z-index: 99999;
+      background: var(--blue-d);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 24px;
+      transition: opacity .5s ease, visibility .5s ease;
+    }
+    #loading-screen.hide { opacity: 0; visibility: hidden; }
+    .ld-logo { font-size: 44px; animation: ldBounce 1s ease-in-out infinite alternate; }
+    @keyframes ldBounce { from { transform: translateY(0); } to { transform: translateY(-10px); } }
+    .ld-title { color: #fff; font-size: 18px; font-weight: 900; }
+    .ld-sub   { color: rgba(255,255,255,.5); font-size: 13px; }
+    .ld-bar   { width: 240px; height: 6px; background: rgba(255,255,255,.15); border-radius: 3px; overflow: hidden; }
+    .ld-bar-inner { height: 100%; background: linear-gradient(90deg, var(--yellow), #fff); animation: ldFill 1.6s cubic-bezier(.4,0,.2,1) forwards; }
+    @keyframes ldFill { 0%{width:0%} 60%{width:75%} 100%{width:100%} }
+    .ld-stripe {
+      width: 240px; height: 10px; border-radius: 2px;
+      background: repeating-linear-gradient(-45deg, var(--yellow) 0, var(--yellow) 7px, var(--blue-d) 7px, var(--blue-d) 14px);
+    }
+
+    /* ── 헤더 ── */
+    .stripe-bar {
+      height: 10px;
+      background: repeating-linear-gradient(-45deg, var(--yellow) 0, var(--yellow) 9px, var(--blue) 9px, var(--blue) 18px);
+    }
+    header {
+      background: linear-gradient(135deg, var(--blue-d) 0%, var(--blue-l) 100%);
+      color: #fff; padding: 28px 24px 24px; text-align: center;
+    }
+    .hdr-badge {
+      display: inline-block; background: var(--yellow); color: var(--blue-d);
+      font-size: 11px; font-weight: 900; padding: 3px 12px; border-radius: 3px;
+      letter-spacing: .06em; margin-bottom: 12px;
+    }
+    header h1 { font-size: 26px; font-weight: 900; margin-bottom: 6px; }
+    header h1 span { color: var(--yellow); }
+    header p { font-size: 13px; opacity: .7; }
+
+    /* ── 본문 ── */
+    .main { max-width: 900px; margin: 0 auto; padding: 32px 20px; }
+
+    /* ── 업로드 영역 ── */
+    .upload-card {
+      background: var(--surface); border-radius: 12px;
+      border: 2px dashed var(--border); overflow: hidden;
+      transition: border-color .2s;
+    }
+    .upload-card.dragover { border-color: var(--blue); background: var(--blue-bg); }
+    .drop-zone {
+      padding: 48px 24px; text-align: center; cursor: pointer;
+      display: flex; flex-direction: column; align-items: center; gap: 12px;
+    }
+    .drop-ico { font-size: 48px; }
+    .drop-title { font-size: 17px; font-weight: 700; color: var(--text); }
+    .drop-sub   { font-size: 13px; color: var(--text-mute); }
+    .drop-btn {
+      margin-top: 6px;
+      background: var(--blue); color: #fff;
+      border: none; border-radius: 6px;
+      padding: 10px 24px; font-size: 14px; font-weight: 700;
+      cursor: pointer; transition: background .15s;
+      font-family: inherit;
+    }
+    .drop-btn:hover { background: var(--blue-d); }
+    #fileInput { display: none; }
+
+    /* ── 미리보기 ── */
+    .preview-wrap {
+      display: none; padding: 20px;
+      flex-direction: column; align-items: center; gap: 16px;
+    }
+    .preview-wrap.show { display: flex; }
+    .preview-img {
+      max-width: 100%; max-height: 360px; border-radius: 8px;
+      border: 1px solid var(--border); object-fit: contain;
+    }
+    .preview-actions { display: flex; gap: 10px; }
+    .btn-analyze {
+      background: var(--blue); color: #fff; border: none;
+      border-radius: 6px; padding: 11px 28px;
+      font-size: 14px; font-weight: 700; cursor: pointer;
+      font-family: inherit; transition: background .15s;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .btn-analyze:hover { background: var(--blue-d); }
+    .btn-analyze:disabled { background: var(--text-mute); cursor: not-allowed; }
+    .btn-reset {
+      background: transparent; color: var(--text-sub);
+      border: 1px solid var(--border); border-radius: 6px;
+      padding: 11px 20px; font-size: 14px; font-weight: 600;
+      cursor: pointer; font-family: inherit; transition: .15s;
+    }
+    .btn-reset:hover { border-color: var(--blue); color: var(--blue); }
+
+    /* ── 분석 중 스피너 ── */
+    .analyzing-wrap {
+      display: none; padding: 40px; text-align: center;
+      flex-direction: column; align-items: center; gap: 16px;
+    }
+    .analyzing-wrap.show { display: flex; }
+    .spinner {
+      width: 48px; height: 48px; border-radius: 50%;
+      border: 4px solid var(--blue-bg);
+      border-top-color: var(--blue);
+      animation: spin .8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .analyzing-text { font-size: 15px; font-weight: 600; color: var(--text-sub); }
+    .analyzing-sub  { font-size: 12px; color: var(--text-mute); }
+
+    /* ── 결과 섹션 ── */
+    .result-section { display: none; margin-top: 28px; }
+    .result-section.show { display: block; }
+
+    .result-header {
+      background: linear-gradient(135deg, var(--blue-d), var(--blue-l));
+      color: #fff; border-radius: 10px 10px 0 0;
+      padding: 16px 22px; display: flex; align-items: center; gap: 12px;
+    }
+    .result-header h2 { font-size: 16px; font-weight: 700; flex: 1; }
+    .result-header .res-badge {
+      background: var(--yellow); color: var(--blue-d);
+      font-size: 10px; font-weight: 900; padding: 3px 9px; border-radius: 3px;
+    }
+
+    .result-body {
+      background: var(--surface); border: 1px solid var(--border);
+      border-top: none; border-radius: 0 0 10px 10px; overflow: hidden;
+    }
+
+    /* 요약 카드 */
+    .summary-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      border-bottom: 1px solid var(--border);
+    }
+    .summary-item {
+      padding: 18px 20px; border-right: 1px solid var(--border);
+    }
+    .summary-item:last-child { border-right: none; }
+    .summary-label {
+      font-size: 11px; font-weight: 700; color: var(--text-mute);
+      text-transform: uppercase; letter-spacing: .06em; margin-bottom: 6px;
+    }
+    .summary-value { font-size: 16px; font-weight: 700; color: var(--text); }
+    .summary-value.total { color: var(--blue); font-size: 20px; }
+
+    /* 항목 테이블 */
+    .items-wrap { padding: 20px; }
+    .items-title {
+      font-size: 13px; font-weight: 700; color: var(--text-sub);
+      margin-bottom: 12px; display: flex; align-items: center; gap: 8px;
+    }
+    .items-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+    table { width: 100%; border-collapse: collapse; }
+    thead tr { background: var(--blue-bg); }
+    thead th {
+      padding: 10px 14px; text-align: left;
+      font-size: 12px; font-weight: 700; color: var(--blue);
+      border-bottom: 2px solid var(--blue);
+    }
+    thead th:not(:first-child) { text-align: right; }
+    tbody tr { border-bottom: 1px solid var(--border); transition: background .1s; }
+    tbody tr:hover { background: var(--blue-bg); }
+    tbody tr:last-child { border-bottom: none; }
+    tbody td { padding: 11px 14px; font-size: 13px; color: var(--text); }
+    tbody td:not(:first-child) { text-align: right; color: var(--text-sub); }
+    tbody td.amount { font-weight: 700; color: var(--text); }
+    tfoot tr { background: #f0f5fb; border-top: 2px solid var(--blue); }
+    tfoot td { padding: 12px 14px; font-size: 14px; font-weight: 700; }
+    tfoot td.total-label { color: var(--blue); }
+    tfoot td.total-amount { text-align: right; color: var(--blue); font-size: 16px; }
+
+    /* ── 에러 ── */
+    .error-box {
+      display: none; margin-top: 20px;
+      background: var(--red-bg); border: 1px solid var(--red);
+      border-radius: 8px; padding: 16px 20px;
+      color: var(--red); font-size: 13px; font-weight: 600;
+    }
+    .error-box.show { display: block; }
+
+    /* ── 다시 분석 버튼 ── */
+    .again-wrap { text-align: center; margin-top: 20px; }
+    .btn-again {
+      background: var(--green); color: #fff; border: none;
+      border-radius: 6px; padding: 11px 28px;
+      font-size: 14px; font-weight: 700; cursor: pointer;
+      font-family: inherit; transition: background .15s;
+    }
+    .btn-again:hover { background: #004d26; }
+
+    /* ── 반응형 ── */
+    @media (max-width: 600px) {
+      .summary-grid { grid-template-columns: 1fr; }
+      .summary-item { border-right: none; border-bottom: 1px solid var(--border); }
+      header h1 { font-size: 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- 로딩 -->
+<div id="loading-screen">
+  <div class="ld-stripe"></div>
+  <div class="ld-logo">🧾</div>
+  <div class="ld-title">영수증 분석기</div>
+  <div class="ld-sub">AI가 영수증을 읽어드립니다</div>
+  <div class="ld-bar"><div class="ld-bar-inner"></div></div>
+  <div class="ld-stripe"></div>
+</div>
+
+<div class="stripe-bar"></div>
+
+<header>
+  <div class="hdr-badge">🧾 AI RECEIPT ANALYZER</div>
+  <h1>영수증 <span>자동 분석기</span></h1>
+  <p>이미지를 업로드하면 Gemini AI가 항목을 자동으로 추출합니다</p>
+</header>
+
+<div class="main">
+
+  <!-- 업로드 카드 -->
+  <div class="upload-card" id="uploadCard">
+
+    <!-- 드롭존 -->
+    <div class="drop-zone" id="dropZone">
+      <div class="drop-ico">📂</div>
+      <div class="drop-title">영수증 이미지를 여기에 드래그하세요</div>
+      <div class="drop-sub">JPG · PNG · WEBP · HEIC 지원 · 최대 10MB</div>
+      <button class="drop-btn" onclick="document.getElementById('fileInput').click()">파일 선택</button>
+      <input type="file" id="fileInput" accept="image/*" />
+    </div>
+
+    <!-- 미리보기 -->
+    <div class="preview-wrap" id="previewWrap">
+      <img id="previewImg" class="preview-img" src="" alt="영수증 미리보기" />
+      <div class="preview-actions">
+        <button class="btn-analyze" id="btnAnalyze" onclick="analyzeReceipt()">
+          <span>🔍</span> AI 분석 시작
+        </button>
+        <button class="btn-reset" onclick="resetAll()">다른 이미지 선택</button>
+      </div>
+    </div>
+
+    <!-- 분석 중 -->
+    <div class="analyzing-wrap" id="analyzingWrap">
+      <div class="spinner"></div>
+      <div class="analyzing-text">AI가 영수증을 분석 중입니다…</div>
+      <div class="analyzing-sub">Gemini Vision이 한글 항목을 인식하고 있습니다</div>
+    </div>
+
+  </div>
+
+  <!-- 에러 -->
+  <div class="error-box" id="errorBox"></div>
+
+  <!-- 결과 -->
+  <div class="result-section" id="resultSection">
+    <div class="result-header">
+      <span style="font-size:20px;">✅</span>
+      <h2>분석 완료</h2>
+      <span class="res-badge">GEMINI AI</span>
+    </div>
+    <div class="result-body">
+      <div class="summary-grid">
+        <div class="summary-item">
+          <div class="summary-label">가맹점명</div>
+          <div class="summary-value" id="resStore">—</div>
+        </div>
+        <div class="summary-item">
+          <div class="summary-label">결제일시</div>
+          <div class="summary-value" id="resDate">—</div>
+        </div>
+        <div class="summary-item">
+          <div class="summary-label">총 금액</div>
+          <div class="summary-value total" id="resTotal">—</div>
+        </div>
+      </div>
+      <div class="items-wrap">
+        <div class="items-title">항목 리스트</div>
+        <table>
+          <thead>
+            <tr>
+              <th>품목명</th>
+              <th>수량</th>
+              <th>단가</th>
+              <th>금액</th>
+            </tr>
+          </thead>
+          <tbody id="itemsBody"></tbody>
+          <tfoot>
+            <tr>
+              <td class="total-label" colspan="3">합 계</td>
+              <td class="total-amount" id="footerTotal">—</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="again-wrap" id="againWrap" style="display:none;">
+    <button class="btn-again" onclick="resetAll()">🔄 다른 영수증 분석하기</button>
+  </div>
+
+</div>
+
+<script>
+  /* ── 로딩 해제 ── */
+  window.addEventListener('load', () => {
+    setTimeout(() => document.getElementById('loading-screen').classList.add('hide'), 1600);
+  });
+
+  let currentFile = null;
+
+  /* ── 파일 선택 ── */
+  document.getElementById('fileInput').addEventListener('change', e => {
+    if (e.target.files[0]) loadFile(e.target.files[0]);
+  });
+
+  /* ── 드래그 앤 드롭 ── */
+  const uploadCard = document.getElementById('uploadCard');
+  uploadCard.addEventListener('dragover', e => { e.preventDefault(); uploadCard.classList.add('dragover'); });
+  uploadCard.addEventListener('dragleave', () => uploadCard.classList.remove('dragover'));
+  uploadCard.addEventListener('drop', e => {
+    e.preventDefault();
+    uploadCard.classList.remove('dragover');
+    const file = e.dataTransfer.files[0];
+    if (file && file.type.startsWith('image/')) loadFile(file);
+  });
+
+  /* ── 드롭존 클릭 ── */
+  document.getElementById('dropZone').addEventListener('click', e => {
+    if (e.target.tagName !== 'BUTTON') document.getElementById('fileInput').click();
+  });
+
+  function loadFile(file) {
+    currentFile = file;
+    const reader = new FileReader();
+    reader.onload = e => {
+      document.getElementById('previewImg').src = e.target.result;
+      document.getElementById('dropZone').style.display = 'none';
+      document.getElementById('previewWrap').classList.add('show');
+      document.getElementById('resultSection').classList.remove('show');
+      document.getElementById('errorBox').classList.remove('show');
+      document.getElementById('againWrap').style.display = 'none';
+    };
+    reader.readAsDataURL(file);
+  }
+
+  /* ── 분석 ── */
+  async function analyzeReceipt() {
+    if (!currentFile) return;
+
+    document.getElementById('previewWrap').classList.remove('show');
+    document.getElementById('analyzingWrap').classList.add('show');
+    document.getElementById('errorBox').classList.remove('show');
+    document.getElementById('resultSection').classList.remove('show');
+
+    try {
+      const base64 = await toBase64(currentFile);
+      const res = await fetch('/api/receipt', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ image: base64, mimeType: currentFile.type })
+      });
+
+      const data = await res.json();
+      if (!res.ok || data.error) throw new Error(data.error || '분석 실패');
+      if (data.raw) throw new Error('JSON 파싱 실패: ' + data.raw);
+
+      renderResult(data);
+    } catch (err) {
+      document.getElementById('analyzingWrap').classList.remove('show');
+      document.getElementById('previewWrap').classList.add('show');
+      const box = document.getElementById('errorBox');
+      box.textContent = '❌ 오류: ' + err.message;
+      box.classList.add('show');
+    }
+  }
+
+  function toBase64(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = e => {
+        const b64 = e.target.result.split(',')[1];
+        resolve(b64);
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
+
+  function renderResult(data) {
+    document.getElementById('analyzingWrap').classList.remove('show');
+
+    document.getElementById('resStore').textContent = data['가맹점명'] || '—';
+    document.getElementById('resDate').textContent  = data['결제일시'] || '—';
+
+    const total = data['총금액'];
+    const fmtTotal = total != null ? Number(total).toLocaleString('ko-KR') + '원' : '—';
+    document.getElementById('resTotal').textContent    = fmtTotal;
+    document.getElementById('footerTotal').textContent = fmtTotal;
+
+    const items = data['항목'] || [];
+    const tbody = document.getElementById('itemsBody');
+    if (items.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--text-mute);padding:20px;">항목을 인식하지 못했습니다</td></tr>';
+    } else {
+      tbody.innerHTML = items.map(item => `
+        <tr>
+          <td>${item['품목명'] || '—'}</td>
+          <td>${item['수량'] ?? 1}</td>
+          <td>${item['단가'] != null ? Number(item['단가']).toLocaleString('ko-KR') + '원' : '—'}</td>
+          <td class="amount">${item['금액'] != null ? Number(item['금액']).toLocaleString('ko-KR') + '원' : '—'}</td>
+        </tr>`).join('');
+    }
+
+    document.getElementById('resultSection').classList.add('show');
+    document.getElementById('againWrap').style.display = 'block';
+    document.getElementById('resultSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  /* ── 초기화 ── */
+  function resetAll() {
+    currentFile = null;
+    document.getElementById('fileInput').value = '';
+    document.getElementById('previewImg').src = '';
+    document.getElementById('dropZone').style.display = '';
+    document.getElementById('previewWrap').classList.remove('show');
+    document.getElementById('analyzingWrap').classList.remove('show');
+    document.getElementById('resultSection').classList.remove('show');
+    document.getElementById('errorBox').classList.remove('show');
+    document.getElementById('againWrap').style.display = 'none';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+</script>
+</body>
+</html>
