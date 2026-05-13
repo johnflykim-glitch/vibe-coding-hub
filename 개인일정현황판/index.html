@@ -228,39 +228,8 @@ body {
 .csb-fill { height:100%;border-radius:20px;transition:width .8s; }
 .csb-val { font-size:11px;color:var(--text2);width:32px;text-align:right;flex-shrink:0;font-weight:600; }
 
-/* ─── 이름 편집 팝업 ─── */
-.name-popup {
-  position:fixed;inset:0;background:rgba(44,74,126,.22);backdrop-filter:blur(6px);
-  display:flex;align-items:center;justify-content:center;z-index:2000;
-  opacity:0;pointer-events:none;transition:opacity .2s;
-}
-.name-popup.open { opacity:1;pointer-events:all; }
-.name-box {
-  background:#fff;border-radius:22px;padding:32px 28px;width:380px;max-width:95vw;
-  box-shadow:0 20px 60px rgba(44,74,126,.18);transform:translateY(16px);transition:transform .25s;
-  text-align:center;
-}
-.name-popup.open .name-box { transform:translateY(0); }
-.name-box .nb-emoji { font-size:40px;margin-bottom:12px; }
-.name-box h2 { font-size:18px;font-weight:800;margin-bottom:6px;color:var(--text); }
-.name-box p  { font-size:12px;color:var(--text2);margin-bottom:20px; }
-.name-box input {
-  width:100%;background:#f4f7fb;border:1px solid var(--border);border-radius:12px;
-  padding:12px 16px;font-size:15px;color:var(--text);outline:none;text-align:center;
-  font-family:inherit;font-weight:600;transition:border-color .2s,box-shadow .2s;
-}
-.name-box input:focus { border-color:var(--a1);box-shadow:0 0 0 3px rgba(74,120,184,.12); }
-.name-box .nb-btn {
-  margin-top:14px;width:100%;padding:12px;border-radius:12px;
-  background:linear-gradient(135deg,#3d6cb4,#5585cb);border:none;
-  color:#fff;font-size:14px;font-weight:700;cursor:pointer;
-  box-shadow:0 4px 14px rgba(74,120,184,.3);transition:all .2s;
-}
-.name-box .nb-btn:hover { box-shadow:0 6px 20px rgba(74,120,184,.42);transform:translateY(-1px); }
-.pname-edit { cursor:pointer;border-bottom:1px dashed rgba(255,255,255,.5);transition:border-color .2s; }
-.pname-edit:hover { border-bottom-color:rgba(255,255,255,.9); }
-.greet-name { cursor:pointer;position:relative; }
-.greet-name:hover::after { content:'✏️';font-size:13px;margin-left:4px; }
+.pname-edit { cursor:pointer; }
+.greet-name { cursor:pointer; }
 
 /* misc */
 ::-webkit-scrollbar{width:5px;height:5px;}
@@ -447,18 +416,6 @@ body {
 
 </main>
 
-<!-- ════ 이름 설정 팝업 ════ -->
-<div class="name-popup" id="name-popup" onclick="closeNameOut(event)">
-  <div class="name-box">
-    <div class="nb-emoji" id="nb-emoji">👋</div>
-    <h2 id="nb-title">안녕하세요!</h2>
-    <p id="nb-desc">대시보드에서 사용할 이름을 입력해주세요.</p>
-    <input id="name-input" type="text" placeholder="이름을 입력하세요" maxlength="10"
-      onkeydown="if(event.key==='Enter') saveName()">
-    <button class="nb-btn" onclick="saveName()">시작하기</button>
-  </div>
-</div>
-
 <!-- ════ Modal ════ -->
 <div class="overlay" id="overlay" onclick="closeModalOut(event)">
   <div class="modal">
@@ -551,45 +508,25 @@ if(!items.length){
 function save(){ localStorage.setItem('mdash3', JSON.stringify(items)); }
 
 // ════ 이름 관리 ════
-let userName = localStorage.getItem('mdash_name') || '';
+let userName = localStorage.getItem('mdash_name') || '사용자';
 
 function applyName(){
-  const n = userName || '사용자';
-  const initial = n.charAt(0);
+  const n = userName;
   document.getElementById('greet-name').textContent = n;
   document.getElementById('sb-name').textContent    = n;
-  document.getElementById('sb-avatar').textContent  = initial;
+  document.getElementById('sb-avatar').textContent  = n.charAt(0);
 }
 
 function openNamePopup(){
-  const isFirst = !localStorage.getItem('mdash_name');
-  document.getElementById('nb-emoji').textContent  = isFirst ? '👋' : '✏️';
-  document.getElementById('nb-title').textContent  = isFirst ? '안녕하세요!' : '이름 변경';
-  document.getElementById('nb-desc').textContent   = isFirst
-    ? '대시보드에서 사용할 이름을 입력해주세요.'
-    : '새로운 이름을 입력해주세요.';
-  document.getElementById('nb-btn') && (document.querySelector('.nb-btn').textContent = isFirst ? '시작하기' : '변경하기');
-  document.getElementById('name-input').value = userName;
-  document.getElementById('name-popup').classList.add('open');
-  setTimeout(()=>document.getElementById('name-input').focus(), 200);
+  const v = prompt('이름을 입력하세요', userName);
+  if(v && v.trim()){
+    userName = v.trim();
+    localStorage.setItem('mdash_name', userName);
+    applyName();
+  }
 }
 
-function saveName(){
-  const v = document.getElementById('name-input').value.trim();
-  if(!v){ document.getElementById('name-input').focus(); return; }
-  userName = v;
-  localStorage.setItem('mdash_name', v);
-  applyName();
-  document.getElementById('name-popup').classList.remove('open');
-}
-
-function closeNameOut(e){ if(e.target.id==='name-popup') {
-  if(userName) document.getElementById('name-popup').classList.remove('open');
-}}
-
-// 첫 방문 시 자동 팝업
-if(!userName) setTimeout(openNamePopup, 400);
-else applyName();
+applyName();
 
 // ════ Clock ════
 function tick(){
