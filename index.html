@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vibe Coding Hub — 한국도로공사</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #f0f4f8;
+  --surface: #ffffff;
+  --border: #dce4ef;
+  --a1: #4a78b8;
+  --a2: #e07a8a;
+  --a3: #3fae7e;
+  --a4: #e89a3a;
+  --a5: #5baad6;
+  --text: #1e2d42;
+  --text2: #5c6d84;
+  --text3: #9aabbe;
+  --sh: 0 2px 14px rgba(74,120,184,.10);
+  --shm: 0 8px 28px rgba(74,120,184,.18);
+}
+body {
+  font-family: 'Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic',sans-serif;
+  background: var(--bg); color: var(--text); min-height: 100vh;
+}
+
+/* ── Header ── */
+header {
+  background: linear-gradient(135deg, #2c4a7e 0%, #3d6cb4 60%, #5585cb 100%);
+  padding: 48px 40px 52px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+header::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse at 70% 50%, rgba(255,255,255,.08) 0%, transparent 70%);
+}
+.header-badge {
+  display: inline-block;
+  background: rgba(255,255,255,.18);
+  border: 1px solid rgba(255,255,255,.3);
+  border-radius: 20px; padding: 5px 16px;
+  font-size: 12px; color: rgba(255,255,255,.9);
+  margin-bottom: 16px; letter-spacing: .5px;
+}
+header h1 {
+  font-size: 36px; font-weight: 800; color: #fff;
+  letter-spacing: -.5px; margin-bottom: 10px;
+}
+header h1 span { opacity: .75; font-weight: 400; }
+header p { font-size: 15px; color: rgba(255,255,255,.72); }
+.header-stats {
+  display: flex; gap: 32px; justify-content: center; margin-top: 32px;
+}
+.hs { text-align: center; }
+.hs-num { font-size: 28px; font-weight: 800; color: #fff; }
+.hs-label { font-size: 11px; color: rgba(255,255,255,.6); margin-top: 3px; }
+
+/* ── Search ── */
+.search-wrap {
+  max-width: 480px; margin: -22px auto 0;
+  position: relative; z-index: 10; padding: 0 20px;
+}
+.search-wrap input {
+  width: 100%; padding: 14px 20px 14px 46px;
+  background: #fff; border: 1px solid var(--border);
+  border-radius: 50px; font-size: 14px; color: var(--text);
+  outline: none; box-shadow: 0 6px 24px rgba(74,120,184,.18);
+  transition: box-shadow .2s;
+  font-family: inherit;
+}
+.search-wrap input:focus { box-shadow: 0 8px 30px rgba(74,120,184,.28); border-color: var(--a1); }
+.search-wrap::before {
+  content: '🔍'; position: absolute; left: 36px; top: 50%;
+  transform: translateY(-50%); font-size: 16px; pointer-events: none;
+}
+
+/* ── Content ── */
+.content { max-width: 1100px; margin: 0 auto; padding: 40px 24px 60px; }
+
+.section-title {
+  font-size: 13px; font-weight: 700; color: var(--text2);
+  letter-spacing: 1px; text-transform: uppercase;
+  margin-bottom: 16px; margin-top: 32px;
+  display: flex; align-items: center; gap: 8px;
+}
+.section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+/* ── Cards ── */
+.cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 18px; }
+.card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 18px; padding: 24px;
+  box-shadow: var(--sh);
+  transition: transform .22s, box-shadow .22s;
+  text-decoration: none; color: inherit;
+  display: flex; flex-direction: column; gap: 12px;
+  position: relative; overflow: hidden;
+}
+.card:hover { transform: translateY(-5px); box-shadow: var(--shm); }
+.card::before {
+  content: ''; position: absolute;
+  top: 0; left: 0; right: 0; height: 4px;
+  background: var(--cc, var(--a1));
+  border-radius: 4px 4px 0 0;
+}
+.card-icon {
+  width: 46px; height: 46px; border-radius: 13px;
+  background: var(--ic, #eaf1fb);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px;
+}
+.card-title { font-size: 15px; font-weight: 700; }
+.card-desc  { font-size: 12px; color: var(--text2); line-height: 1.6; flex: 1; }
+.card-footer {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-top: 4px;
+}
+.card-tag {
+  font-size: 10px; font-weight: 700; padding: 3px 10px;
+  border-radius: 20px; background: var(--ic, #eaf1fb);
+  color: var(--cc, var(--a1));
+}
+.card-arrow {
+  width: 28px; height: 28px; border-radius: 50%;
+  background: var(--ic, #eaf1fb); display: flex;
+  align-items: center; justify-content: center;
+  font-size: 14px; color: var(--cc, var(--a1));
+  transition: background .2s;
+}
+.card:hover .card-arrow { background: var(--cc, var(--a1)); color: #fff; }
+
+/* ── Footer ── */
+footer {
+  text-align: center; padding: 28px;
+  font-size: 12px; color: var(--text3);
+  border-top: 1px solid var(--border);
+}
+footer a { color: var(--a1); text-decoration: none; }
+
+/* ── Responsive ── */
+@media(max-width: 600px) {
+  header { padding: 36px 20px 44px; }
+  header h1 { font-size: 26px; }
+  .cards { grid-template-columns: 1fr; }
+  .header-stats { gap: 20px; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-badge">🚧 한국도로공사 · Vibe Coding Hub</div>
+  <h1>프로젝트 허브 <span>/ Project Hub</span></h1>
+  <p>바이브코딩으로 만든 프로젝트 모음입니다.</p>
+  <div class="header-stats">
+    <div class="hs"><div class="hs-num" id="total-count">0</div><div class="hs-label">전체 프로젝트</div></div>
+    <div class="hs"><div class="hs-num">2026</div><div class="hs-label">제작연도</div></div>
+    <div class="hs"><div class="hs-num">🔥</div><div class="hs-label">Vibe Coding</div></div>
+  </div>
+</header>
+
+<div class="search-wrap">
+  <input type="text" id="search" placeholder="프로젝트 검색..." oninput="filterCards()">
+</div>
+
+<div class="content">
+
+  <div class="section-title">📊 업무 관리</div>
+  <div class="cards" id="cards-work">
+
+    <a class="card" href="/개인일정현황판/" style="--cc:#4a78b8;--ic:#eaf1fb;">
+      <div class="card-icon">📅</div>
+      <div class="card-title">개인 일정관리 현황판</div>
+      <div class="card-desc">주간 일정, 월간 진행관리, 카테고리별 진행률을 한눈에 확인하는 개인 대시보드</div>
+      <div class="card-footer">
+        <span class="card-tag">Dashboard</span>
+        <span class="card-arrow">→</span>
+      </div>
+    </a>
+
+    <a class="card" href="/업무보고서_2026-01/" style="--cc:#3fae7e;--ic:#e6f7ef;">
+      <div class="card-icon">📋</div>
+      <div class="card-title">업무보고서 2026-01</div>
+      <div class="card-desc">월간 업무 현황 및 성과를 정리한 보고서 시스템</div>
+      <div class="card-footer">
+        <span class="card-tag">Report</span>
+        <span class="card-arrow">→</span>
+      </div>
+    </a>
+
+  </div>
+
+  <div class="section-title">🚗 교통 · 안전</div>
+  <div class="cards" id="cards-traffic">
+
+    <a class="card" href="/교통량_분석/" style="--cc:#5baad6;--ic:#e2f3fb;">
+      <div class="card-icon">📈</div>
+      <div class="card-title">교통량 분석</div>
+      <div class="card-desc">고속도로 교통량 데이터를 분석하고 시각화하는 대시보드</div>
+      <div class="card-footer">
+        <span class="card-tag">Analysis</span>
+        <span class="card-arrow">→</span>
+      </div>
+    </a>
+
+    <a class="card" href="/안전운전캠페인_사이트/" style="--cc:#e07a8a;--ic:#fce8eb;">
+      <div class="card-icon">🛡️</div>
+      <div class="card-title">안전운전 캠페인</div>
+      <div class="card-desc">고속도로 안전운전 홍보 캠페인 웹사이트</div>
+      <div class="card-footer">
+        <span class="card-tag">Campaign</span>
+        <span class="card-arrow">→</span>
+      </div>
+    </a>
+
+  </div>
+
+  <div class="section-title">🤖 AI · 자동화</div>
+  <div class="cards" id="cards-ai">
+
+    <a class="card" href="/receipt/" style="--cc:#e89a3a;--ic:#fdf3e0;">
+      <div class="card-icon">🧾</div>
+      <div class="card-title">영수증 분석기</div>
+      <div class="card-desc">Gemini Vision AI로 영수증 사진을 업로드하면 항목을 자동 추출하는 도구</div>
+      <div class="card-footer">
+        <span class="card-tag">AI · Vision</span>
+        <span class="card-arrow">→</span>
+      </div>
+    </a>
+
+    <a class="card" href="/글로벌경제뉴스/" style="--cc:#4a78b8;--ic:#eaf1fb;">
+      <div class="card-icon">🌐</div>
+      <div class="card-title">글로벌 경제뉴스</div>
+      <div class="card-desc">전세계 주요 경제 뉴스를 자동 수집·요약하는 뉴스 대시보드</div>
+      <div class="card-footer">
+        <span class="card-tag">News · AI</span>
+        <span class="card-arrow">→</span>
+      </div>
+    </a>
+
+    <a class="card" href="/바이브코딩 뉴스/" style="--cc:#a855f7;--ic:#f3e8ff;">
+      <div class="card-icon">💻</div>
+      <div class="card-title">바이브코딩 뉴스</div>
+      <div class="card-desc">바이브코딩 트렌드 및 최신 소식을 모아보는 뉴스레터 페이지</div>
+      <div class="card-footer">
+        <span class="card-tag">Newsletter</span>
+        <span class="card-arrow">→</span>
+      </div>
+    </a>
+
+    <a class="card" href="/로또/" style="--cc:#e89a3a;--ic:#fdf3e0;">
+      <div class="card-icon">🎱</div>
+      <div class="card-title">로또 번호 생성기</div>
+      <div class="card-desc">AI 기반 로또 번호 추천 및 당첨 통계 분석 도구</div>
+      <div class="card-footer">
+        <span class="card-tag">Fun · AI</span>
+        <span class="card-arrow">→</span>
+      </div>
+    </a>
+
+  </div>
+
+</div>
+
+<footer>
+  © 2026 한국도로공사 바이브코딩 허브 &nbsp;|&nbsp;
+  <a href="https://github.com/johnflykim-glitch/vibe-coding-hub" target="_blank">GitHub</a>
+  &nbsp;·&nbsp; Powered by Vibe Coding 🔥
+</footer>
+
+<script>
+const projects = document.querySelectorAll('.card');
+document.getElementById('total-count').textContent = projects.length;
+
+function filterCards() {
+  const q = document.getElementById('search').value.toLowerCase();
+  projects.forEach(c => {
+    const text = c.textContent.toLowerCase();
+    c.style.display = text.includes(q) ? '' : 'none';
+  });
+}
+</script>
+</body>
+</html>
